@@ -72,7 +72,7 @@ function TrigramFigure({ trigram }: { trigram: Trigram }) {
 function HexagramCard({ title, result, changed = false }: { title: string; result: HexagramResult; changed?: boolean }) {
   const lines = changed ? result.changedLines : result.originalLines
   return (
-    <article className={`result-card${changed ? ' changed-card' : ''}`}>
+    <article className={`result-card ${changed ? 'changed-card' : 'original-card'}`}>
       <div className="card-heading">
         <div>
           <p className="section-kicker">{title}</p>
@@ -92,7 +92,7 @@ function HexagramCard({ title, result, changed = false }: { title: string; resul
 
 function SpaceTimeCard({ index, trigram, formula }: { index: string; trigram: Trigram; formula: string }) {
   return (
-    <article className="space-card">
+    <article className={`space-card ${index === '一' ? 'space-one' : 'space-two'}`}>
       <div className="space-index">{index}</div>
       <div className="space-copy">
         <p className="section-kicker">时空卦{index}</p>
@@ -297,23 +297,15 @@ export default function App() {
           </div>
 
           {result ? (
-            <div className="hexagram-grid">
+            <div className="divination-flow">
               <HexagramCard title="本卦" result={result} />
-              <HexagramCard title="变卦" result={result} changed />
-            </div>
-          ) : (
-            <div className="empty-state">输入两个有效整数后即可起卦。</div>
-          )}
-
-          <div className="space-section">
-            <div className="results-heading compact-heading">
-              <div>
-                <p className="section-kicker">时空</p>
-                <h2>当下地支之卦</h2>
+              <div className="results-heading compact-heading space-flow-heading">
+                <div>
+                  <p className="section-kicker">时空</p>
+                  <h2>当下地支之卦</h2>
+                </div>
+                <span className="branch-badge">{resultBranch.name}时 · 序 {resultBranch.number}</span>
               </div>
-              <span className="branch-badge">{resultBranch.name}时 · 序 {resultBranch.number}</span>
-            </div>
-            <div className="space-grid">
               <SpaceTimeCard
                 index="一"
                 trigram={spaceTime.folded}
@@ -324,8 +316,11 @@ export default function App() {
                 trigram={spaceTime.direct}
                 formula={`${resultBranch.name} → 直接对应 → ${spaceTime.direct.name}`}
               />
+              <HexagramCard title="变卦" result={result} changed />
             </div>
-          </div>
+          ) : (
+            <div className="empty-state">输入两个有效整数后即可起卦。</div>
+          )}
         </section>
       </div>
 
