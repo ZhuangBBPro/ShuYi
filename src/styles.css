@@ -88,6 +88,17 @@ form { margin-top: 30px; }
 .cast-time-banner .section-kicker { display: block; margin-bottom: 9px; }
 .cast-time-banner time { display: flex; align-items: baseline; flex-wrap: wrap; color: var(--ink); font-family: var(--serif); font-size: clamp(20px, 2.2vw, 31px); line-height: 1.35; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
 .cast-time-banner time span { white-space: nowrap; }
+.gan-zhi-grid { width: min(100%, 420px); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+.gan-zhi-pillar { min-width: 0; display: grid; justify-items: center; gap: 6px; padding: 12px 8px 9px; border: 1px solid var(--line); background: rgba(255,255,255,.018); }
+.gan-zhi-pillar > span { color: var(--muted); font-size: 12px; letter-spacing: .14em; }
+.gan-zhi-characters { display: flex; align-items: center; justify-content: center; gap: 5px; font-family: var(--serif); font-size: 29px; line-height: 1; }
+.gan-zhi-characters b { font-weight: 600; }
+.element-wood { color: #72b56c; }
+.element-fire { color: #df725e; }
+.element-earth { color: #d6ad5d; }
+.element-metal { color: #e3c77c; }
+.element-water { color: #5f9fdd; }
+.element-neutral { color: var(--ink); }
 .results-heading { min-height: 52px; display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; }
 .formula-chip { padding: 8px 12px; display: flex; flex-direction: column; gap: 2px; border-left: 2px solid var(--gold); background: rgba(216,181,106,.06); }
 .formula-chip span { color: var(--muted); font-size: 10px; letter-spacing: .1em; }
@@ -174,6 +185,9 @@ footer p { margin: 0; }
   .cast-time-banner { margin-bottom: 16px; padding-bottom: 14px; }
   .cast-time-banner .section-kicker { margin-bottom: 5px; }
   .cast-time-banner time { font-size: 17px; line-height: 1.45; }
+  .gan-zhi-grid { width: 100%; gap: 7px; margin-top: 12px; }
+  .gan-zhi-pillar { gap: 5px; padding: 9px 4px 7px; }
+  .gan-zhi-characters { gap: 3px; font-size: 24px; }
   .number-fields { grid-template-columns: 1fr; }
   .results-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
   .results > .results-heading h2 { font-size: 20px; }

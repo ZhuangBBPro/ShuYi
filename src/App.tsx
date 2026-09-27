@@ -6,7 +6,7 @@ import {
   getEarthlyBranch,
   type HexagramResult,
 } from './lib/divination'
-import { formatCastTime } from './lib/date'
+import { formatCastTime, getGanZhiPillars } from './lib/date'
 
 declare global {
   interface Document {
@@ -32,6 +32,18 @@ const dateTimeFormatter = new Intl.DateTimeFormat('zh-CN', {
   second: '2-digit',
   hour12: false,
 })
+
+const FIVE_ELEMENT_CHARACTERS: Record<string, string> = {
+  '甲': 'wood', '乙': 'wood', '寅': 'wood', '卯': 'wood',
+  '丙': 'fire', '丁': 'fire', '巳': 'fire', '午': 'fire',
+  '戊': 'earth', '己': 'earth', '辰': 'earth', '戌': 'earth', '丑': 'earth', '未': 'earth',
+  '庚': 'metal', '辛': 'metal', '申': 'metal', '酉': 'metal',
+  '壬': 'water', '癸': 'water', '亥': 'water', '子': 'water',
+}
+
+function ganZhiElementClass(character: string) {
+  return `element-${FIVE_ELEMENT_CHARACTERS[character] ?? 'neutral'}`
+}
 
 function YangYinLine({ yang, active = false, label }: { yang: boolean; active?: boolean; label: string }) {
   return (
@@ -184,6 +196,7 @@ export default function App() {
   const result = values ? calculateHexagram(values.first, values.second, withTime, resultBranch.number) : null
   const spaceTime = calculateSpaceTime(resultBranch)
   const castTimeParts = formatCastTime(castTime)
+  const ganZhiPillars = getGanZhiPillars(castTime)
 
   const cast = (event?: FormEvent) => {
     event?.preventDefault()
@@ -295,6 +308,17 @@ export default function App() {
               <span>{castTimeParts.solarDate}</span>
               <span>({castTimeParts.lunarDate}){castTimeParts.clockTime}</span>
             </time>
+            <div className="gan-zhi-grid" aria-label="起卦时间四柱干支">
+              {ganZhiPillars.map((pillar) => (
+                <div className="gan-zhi-pillar" key={pillar.label} aria-label={`${pillar.label}${pillar.value}`}>
+                  <div className="gan-zhi-characters" aria-hidden="true">
+                    <b className={ganZhiElementClass(pillar.stem)}>{pillar.stem}</b>
+                    <b className={ganZhiElementClass(pillar.branch)}>{pillar.branch}</b>
+                  </div>
+                  <span>{pillar.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
           <div className="results-heading">
             <div>
