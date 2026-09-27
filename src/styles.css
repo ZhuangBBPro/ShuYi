@@ -85,6 +85,7 @@ form { margin-top: 30px; }
 
 .results { min-width: 0; padding: 34px; }
 .cast-time-banner { margin-bottom: 24px; padding: 0 0 22px; border-bottom: 1px solid var(--line); }
+.results-heading + .cast-time-banner { margin-top: 18px; }
 .cast-time-banner .section-kicker { display: block; margin-bottom: 9px; }
 .cast-time-banner time { display: flex; align-items: baseline; flex-wrap: wrap; color: var(--ink); font-family: var(--serif); font-size: clamp(20px, 2.2vw, 31px); line-height: 1.35; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
 .cast-time-banner time span { white-space: nowrap; }
@@ -183,6 +184,7 @@ footer p { margin: 0; }
   .control-panel { padding: 24px 18px; }
   .results { padding: 20px 12px; }
   .cast-time-banner { margin-bottom: 16px; padding-bottom: 14px; }
+  .results-heading + .cast-time-banner { margin-top: 14px; }
   .cast-time-banner .section-kicker { margin-bottom: 5px; }
   .cast-time-banner time { font-size: 17px; line-height: 1.45; }
   .gan-zhi-grid { width: 100%; gap: 7px; margin-top: 12px; }

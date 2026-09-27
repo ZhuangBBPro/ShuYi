@@ -302,6 +302,18 @@ export default function App() {
         </aside>
 
         <section className="results" aria-live="polite">
+          <div className="results-heading">
+            <div>
+              <p className="section-kicker">卦象</p>
+              <h2>本卦与变卦</h2>
+            </div>
+            {result && (
+              <div className="formula-chip">
+                <span>动爻推演</span>
+                <b>{values?.first} + {values?.second}{withTime ? ` + ${resultBranch.number}` : ''} = {result.movingRaw} → {result.movingLine}</b>
+              </div>
+            )}
+          </div>
           <div className="cast-time-banner">
             <span className="section-kicker">起卦时间</span>
             <time dateTime={castTime.toISOString()}>
@@ -319,18 +331,6 @@ export default function App() {
                 </div>
               ))}
             </div>
-          </div>
-          <div className="results-heading">
-            <div>
-              <p className="section-kicker">卦象</p>
-              <h2>本卦与变卦</h2>
-            </div>
-            {result && (
-              <div className="formula-chip">
-                <span>动爻推演</span>
-                <b>{values?.first} + {values?.second}{withTime ? ` + ${resultBranch.number}` : ''} = {result.movingRaw} → {result.movingLine}</b>
-              </div>
-            )}
           </div>
 
           {result ? (
