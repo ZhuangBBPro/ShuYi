@@ -1,10 +1,8 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react'
-import { LINE_NAMES, type Trigram } from './config'
 import {
   calculateHexagram,
   calculateSpaceTime,
   getEarthlyBranch,
-  type HexagramResult,
 } from './lib/divination'
 import { formatCastTime, getGanZhiPillars } from './lib/date'
 
@@ -45,76 +43,45 @@ function ganZhiElementClass(character: string) {
   return `element-${FIVE_ELEMENT_CHARACTERS[character] ?? 'neutral'}`
 }
 
-function YangYinLine({ yang, active = false, label }: { yang: boolean; active?: boolean; label: string }) {
+function CompactLine({ yang, active = false, lineNumber }: { yang: boolean; active?: boolean; lineNumber: number }) {
   return (
-    <div className={`yao-row${active ? ' is-moving' : ''}`} aria-label={`${label}，${yang ? '阳爻' : '阴爻'}${active ? '，动爻' : ''}`}>
-      <span className={`yao-mark ${yang ? 'yang' : 'yin'}`} aria-hidden="true">
+    <div className={`compact-line${active ? ' is-moving' : ''}`} aria-label={`第${lineNumber}爻，${yang ? '阳爻' : '阴爻'}${active ? '，动爻' : ''}`}>
+      <span className={`compact-mark ${yang ? 'yang' : 'yin'}`} aria-hidden="true">
         <i />
         {!yang && <i />}
       </span>
-      <span className="yao-label">{label}{active ? ' · 动' : ''}</span>
+      {active && <b aria-hidden="true">×</b>}
     </div>
   )
 }
 
-function HexagramFigure({ lines, movingLine, changed = false }: { lines: boolean[]; movingLine?: number; changed?: boolean }) {
+function CompactHexagram({
+  tag,
+  descriptor,
+  name,
+  lines,
+  tone,
+  movingLine,
+}: {
+  tag: string
+  descriptor: string
+  name: string
+  lines: readonly boolean[]
+  tone: 'original' | 'space-one' | 'space-two' | 'changed'
+  movingLine?: number
+}) {
   return (
-    <div className="hexagram-figure">
-      {[...lines].map((line, index) => ({ line, lineNumber: index + 1 })).reverse().map(({ line, lineNumber }) => (
-        <YangYinLine
-          key={lineNumber}
-          yang={line}
-          active={!changed && movingLine === lineNumber}
-          label={LINE_NAMES[lineNumber - 1]}
-        />
-      ))}
-    </div>
-  )
-}
-
-function TrigramFigure({ trigram }: { trigram: Trigram }) {
-  return (
-    <div className="trigram-figure" aria-label={`${trigram.name}卦三爻`}>
-      {[...trigram.lines].reverse().map((line, index) => (
-        <YangYinLine key={index} yang={line} label="" />
-      ))}
-    </div>
-  )
-}
-
-function HexagramCard({ title, result, changed = false }: { title: string; result: HexagramResult; changed?: boolean }) {
-  const lines = changed ? result.changedLines : result.originalLines
-  const upper = changed ? result.changedUpper : result.upper
-  const lower = changed ? result.changedLower : result.lower
-  return (
-    <article className={`result-card ${changed ? 'changed-card' : 'original-card'}`}>
-      <div className="card-heading">
-        <div>
-          <p className="section-kicker">{title}</p>
-          <h2>{upper.name}上 · {lower.name}下</h2>
-        </div>
-        <span className="double-symbol" aria-hidden="true">{upper.symbol}{lower.symbol}</span>
+    <article className={`compact-hexagram tone-${tone}`} aria-label={`${tag}，${name}`}>
+      <div className="compact-title">
+        <span>[ {tag} ]</span>
+        <small>「{descriptor}」</small>
       </div>
-      <HexagramFigure lines={lines} movingLine={result.movingLine} changed={changed} />
-      <p className="card-note">
-        {changed
-          ? `${LINE_NAMES[result.movingLine - 1]}阴阳翻转 · 变为 ${upper.symbol}${upper.name}上 ${lower.symbol}${lower.name}下`
-          : `${LINE_NAMES[result.movingLine - 1]}为动爻 · 下卦 ${result.lower.symbol}${result.lower.name} · 上卦 ${result.upper.symbol}${result.upper.name}`}
-      </p>
-    </article>
-  )
-}
-
-function SpaceTimeCard({ index, trigram, formula }: { index: string; trigram: Trigram; formula: string }) {
-  return (
-    <article className={`space-card ${index === '一' ? 'space-one' : 'space-two'}`}>
-      <div className="space-index">{index}</div>
-      <div className="space-copy">
-        <p className="section-kicker">时空卦{index}</p>
-        <h3><span aria-hidden="true">{trigram.symbol}</span> {trigram.name}卦</h3>
-        <p>{formula}</p>
+      <div className={`compact-lines${lines.length === 3 ? ' is-trigram' : ''}`}>
+        {[...lines].map((line, index) => ({ line, lineNumber: index + 1 })).reverse().map(({ line, lineNumber }) => (
+          <CompactLine key={lineNumber} yang={line} lineNumber={lineNumber} active={movingLine === lineNumber} />
+        ))}
       </div>
-      <TrigramFigure trigram={trigram} />
+      <h3>{name}</h3>
     </article>
   )
 }
@@ -334,26 +301,36 @@ export default function App() {
           </div>
 
           {result ? (
-            <div className="divination-flow">
-              <HexagramCard title="本卦" result={result} />
-              <div className="results-heading compact-heading space-flow-heading">
-                <div>
-                  <p className="section-kicker">时空</p>
-                  <h2>当下地支之卦</h2>
-                </div>
-                <span className="branch-badge">{resultBranch.name}时 · 序 {resultBranch.number}</span>
-              </div>
-              <SpaceTimeCard
-                index="一"
-                trigram={spaceTime.folded}
-                formula={`${resultBranch.name} ${resultBranch.number} → ${spaceTime.foldedNumber} → ${spaceTime.folded.name}`}
+            <div className="compact-divination">
+              <CompactHexagram
+                tag="主"
+                descriptor={`${result.upper.name}上·${result.lower.name}下`}
+                name={result.name}
+                lines={result.originalLines}
+                movingLine={result.movingLine}
+                tone="original"
               />
-              <SpaceTimeCard
-                index="二"
-                trigram={spaceTime.direct}
-                formula={`${resultBranch.name} → 直接对应 → ${spaceTime.direct.name}`}
+              <CompactHexagram
+                tag="时空"
+                descriptor={`一·${spaceTime.folded.name}卦`}
+                name={`${spaceTime.folded.name}卦`}
+                lines={spaceTime.folded.lines}
+                tone="space-one"
               />
-              <HexagramCard title="变卦" result={result} changed />
+              <CompactHexagram
+                tag="时空"
+                descriptor={`二·${spaceTime.direct.name}卦`}
+                name={`${spaceTime.direct.name}卦`}
+                lines={spaceTime.direct.lines}
+                tone="space-two"
+              />
+              <CompactHexagram
+                tag="变"
+                descriptor={`${result.changedUpper.name}上·${result.changedLower.name}下`}
+                name={result.changedName}
+                lines={result.changedLines}
+                tone="changed"
+              />
             </div>
           ) : (
             <div className="empty-state">输入两个有效整数后即可起卦。</div>

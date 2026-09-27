@@ -40,6 +40,14 @@ describe('moving line', () => {
     expect(result.lower.name).toBe('兑')
     expect(result.changedUpper.name).toBe('乾')
     expect(result.changedLower.name).toBe('乾')
+    expect(result.name).toBe('天泽履')
+    expect(result.changedName).toBe('乾为天')
+  })
+
+  it('returns the standard names for the default original and changed hexagrams', () => {
+    const result = calculateHexagram(18, 27, true, 7)
+    expect(result.name).toBe('泽火革')
+    expect(result.changedName).toBe('水火既济')
   })
 })
 

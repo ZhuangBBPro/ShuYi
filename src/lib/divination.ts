@@ -5,10 +5,27 @@ export type HexagramResult = {
   lower: Trigram
   changedUpper: Trigram
   changedLower: Trigram
+  name: string
+  changedName: string
   originalLines: boolean[]
   changedLines: boolean[]
   movingLine: number
   movingRaw: number
+}
+
+const HEXAGRAM_NAMES: Record<number, readonly string[]> = {
+  1: ['乾为天', '天泽履', '天火同人', '天雷无妄', '天风姤', '天水讼', '天山遁', '天地否'],
+  2: ['泽天夬', '兑为泽', '泽火革', '泽雷随', '泽风大过', '泽水困', '泽山咸', '泽地萃'],
+  3: ['火天大有', '火泽睽', '离为火', '火雷噬嗑', '火风鼎', '火水未济', '火山旅', '火地晋'],
+  4: ['雷天大壮', '雷泽归妹', '雷火丰', '震为雷', '雷风恒', '雷水解', '雷山小过', '雷地豫'],
+  5: ['风天小畜', '风泽中孚', '风火家人', '风雷益', '巽为风', '风水涣', '风山渐', '风地观'],
+  6: ['水天需', '水泽节', '水火既济', '水雷屯', '水风井', '坎为水', '水山蹇', '水地比'],
+  7: ['山天大畜', '山泽损', '山火贲', '山雷颐', '山风蛊', '山水蒙', '艮为山', '山地剥'],
+  8: ['地天泰', '地泽临', '地火明夷', '地雷复', '地风升', '地水师', '地山谦', '坤为地'],
+}
+
+export function getHexagramName(upper: Trigram, lower: Trigram): string {
+  return HEXAGRAM_NAMES[upper.number][lower.number - 1]
 }
 
 export type SpaceTimeResult = {
@@ -71,6 +88,8 @@ export function calculateHexagram(
     lower,
     changedUpper,
     changedLower,
+    name: getHexagramName(upper, lower),
+    changedName: getHexagramName(changedUpper, changedLower),
     originalLines,
     changedLines,
     movingLine,
