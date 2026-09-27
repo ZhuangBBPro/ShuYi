@@ -84,6 +84,10 @@ form { margin-top: 30px; }
 .time-meta b { color: #c8cede; font-variant-numeric: tabular-nums; }
 
 .results { min-width: 0; padding: 34px; }
+.cast-time-banner { margin-bottom: 24px; padding: 0 0 22px; border-bottom: 1px solid var(--line); }
+.cast-time-banner .section-kicker { display: block; margin-bottom: 9px; }
+.cast-time-banner time { display: flex; align-items: baseline; flex-wrap: wrap; color: var(--ink); font-family: var(--serif); font-size: clamp(20px, 2.2vw, 31px); line-height: 1.35; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.cast-time-banner time span { white-space: nowrap; }
 .results-heading { min-height: 52px; display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; }
 .formula-chip { padding: 8px 12px; display: flex; flex-direction: column; gap: 2px; border-left: 2px solid var(--gold); background: rgba(216,181,106,.06); }
 .formula-chip span { color: var(--muted); font-size: 10px; letter-spacing: .1em; }
@@ -167,6 +171,9 @@ footer p { margin: 0; }
   .intro > p:last-child { font-size: 15px; }
   .control-panel { padding: 24px 18px; }
   .results { padding: 20px 12px; }
+  .cast-time-banner { margin-bottom: 16px; padding-bottom: 14px; }
+  .cast-time-banner .section-kicker { margin-bottom: 5px; }
+  .cast-time-banner time { font-size: 17px; line-height: 1.45; }
   .number-fields { grid-template-columns: 1fr; }
   .results-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
   .results > .results-heading h2 { font-size: 20px; }

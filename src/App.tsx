@@ -6,6 +6,7 @@ import {
   getEarthlyBranch,
   type HexagramResult,
 } from './lib/divination'
+import { formatCastTime } from './lib/date'
 
 declare global {
   interface Document {
@@ -71,19 +72,21 @@ function TrigramFigure({ trigram }: { trigram: Trigram }) {
 
 function HexagramCard({ title, result, changed = false }: { title: string; result: HexagramResult; changed?: boolean }) {
   const lines = changed ? result.changedLines : result.originalLines
+  const upper = changed ? result.changedUpper : result.upper
+  const lower = changed ? result.changedLower : result.lower
   return (
     <article className={`result-card ${changed ? 'changed-card' : 'original-card'}`}>
       <div className="card-heading">
         <div>
           <p className="section-kicker">{title}</p>
-          <h2>{result.upper.name}上 · {result.lower.name}下</h2>
+          <h2>{upper.name}上 · {lower.name}下</h2>
         </div>
-        <span className="double-symbol" aria-hidden="true">{result.upper.symbol}{result.lower.symbol}</span>
+        <span className="double-symbol" aria-hidden="true">{upper.symbol}{lower.symbol}</span>
       </div>
       <HexagramFigure lines={lines} movingLine={result.movingLine} changed={changed} />
       <p className="card-note">
         {changed
-          ? `${LINE_NAMES[result.movingLine - 1]}阴阳翻转，其余五爻不变`
+          ? `${LINE_NAMES[result.movingLine - 1]}阴阳翻转 · 变为 ${upper.symbol}${upper.name}上 ${lower.symbol}${lower.name}下`
           : `${LINE_NAMES[result.movingLine - 1]}为动爻 · 下卦 ${result.lower.symbol}${result.lower.name} · 上卦 ${result.upper.symbol}${result.upper.name}`}
       </p>
     </article>
@@ -156,6 +159,8 @@ export default function App() {
         return {
           upper: nextResult.upper.name,
           lower: nextResult.lower.name,
+          changedUpper: nextResult.changedUpper.name,
+          changedLower: nextResult.changedLower.name,
           movingLine: nextResult.movingLine,
           branch: branch.name,
           withTime: data.withTime,
@@ -178,6 +183,7 @@ export default function App() {
   const resultBranch = getEarthlyBranch(castTime)
   const result = values ? calculateHexagram(values.first, values.second, withTime, resultBranch.number) : null
   const spaceTime = calculateSpaceTime(resultBranch)
+  const castTimeParts = formatCastTime(castTime)
 
   const cast = (event?: FormEvent) => {
     event?.preventDefault()
@@ -283,6 +289,13 @@ export default function App() {
         </aside>
 
         <section className="results" aria-live="polite">
+          <div className="cast-time-banner">
+            <span className="section-kicker">起卦时间</span>
+            <time dateTime={castTime.toISOString()}>
+              <span>{castTimeParts.solarDate}</span>
+              <span>({castTimeParts.lunarDate}){castTimeParts.clockTime}</span>
+            </time>
+          </div>
           <div className="results-heading">
             <div>
               <p className="section-kicker">卦象</p>

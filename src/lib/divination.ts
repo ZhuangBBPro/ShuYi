@@ -3,6 +3,8 @@ import { EARTHLY_BRANCHES, TRIGRAMS, type EarthlyBranch, type Trigram } from '..
 export type HexagramResult = {
   upper: Trigram
   lower: Trigram
+  changedUpper: Trigram
+  changedLower: Trigram
   originalLines: boolean[]
   changedLines: boolean[]
   movingLine: number
@@ -35,6 +37,15 @@ export function getMovingLine(raw: number): number {
   return remainder === 0 ? 6 : remainder
 }
 
+export function getTrigramByLines(lines: readonly boolean[]): Trigram {
+  const trigram = Object.values(TRIGRAMS).find((item) =>
+    item.lines.every((line, index) => line === lines[index]),
+  )
+
+  if (!trigram) throw new Error('无法识别三爻卦象。')
+  return trigram
+}
+
 export function calculateHexagram(
   firstNumber: number,
   secondNumber: number,
@@ -52,8 +63,19 @@ export function calculateHexagram(
   const originalLines = [...lower.lines, ...upper.lines]
   const changedLines = [...originalLines]
   changedLines[movingLine - 1] = !changedLines[movingLine - 1]
+  const changedLower = getTrigramByLines(changedLines.slice(0, 3))
+  const changedUpper = getTrigramByLines(changedLines.slice(3, 6))
 
-  return { upper, lower, originalLines, changedLines, movingLine, movingRaw }
+  return {
+    upper,
+    lower,
+    changedUpper,
+    changedLower,
+    originalLines,
+    changedLines,
+    movingLine,
+    movingRaw,
+  }
 }
 
 export function calculateSpaceTime(branch: EarthlyBranch): SpaceTimeResult {

@@ -33,6 +33,14 @@ describe('moving line', () => {
     expect(withTime.movingLine).toBe(6)
     expect(withTime.changedLines.filter((line, index) => line !== withTime.originalLines[index])).toHaveLength(1)
   })
+
+  it('resolves the changed upper and lower trigrams from the flipped lines', () => {
+    const result = calculateHexagram(1, 2, false, 3)
+    expect(result.upper.name).toBe('乾')
+    expect(result.lower.name).toBe('兑')
+    expect(result.changedUpper.name).toBe('乾')
+    expect(result.changedLower.name).toBe('乾')
+  })
 })
 
 describe('earthly branches', () => {
