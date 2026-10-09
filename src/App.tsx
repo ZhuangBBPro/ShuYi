@@ -89,7 +89,6 @@ function CompactHexagram({
 export default function App() {
   const [firstNumber, setFirstNumber] = useState('18')
   const [secondNumber, setSecondNumber] = useState('27')
-  const [withTime, setWithTime] = useState(true)
   const [castTime, setCastTime] = useState(() => new Date())
   const [clock, setClock] = useState(() => new Date())
   const [error, setError] = useState('')
@@ -107,30 +106,28 @@ export default function App() {
     const register = context.registerTool({
       name: 'cast_divination',
       title: '起卦',
-      description: '输入两个整数，可选当下时辰，计算并更新页面上的本卦、动爻与变卦。',
+      description: '输入两个整数，以上下卦数字之和定动爻，计算并更新本卦与变卦。',
       inputSchema: {
         type: 'object',
         properties: {
           firstNumber: { type: 'integer', description: '定上卦的第一数' },
           secondNumber: { type: 'integer', description: '定下卦的第二数' },
-          withTime: { type: 'boolean', description: '是否让当前地支序数参与动爻计算' },
         },
-        required: ['firstNumber', 'secondNumber', 'withTime'],
+        required: ['firstNumber', 'secondNumber'],
         additionalProperties: false,
       },
       annotations: { readOnlyHint: false, untrustedContentHint: false },
       async execute(input) {
         const data = input as Record<string, unknown>
-        if (!Number.isInteger(data.firstNumber) || !Number.isInteger(data.secondNumber) || typeof data.withTime !== 'boolean') {
-          throw new Error('第一数、第二数必须为整数，withTime 必须为布尔值。')
+        if (!Number.isInteger(data.firstNumber) || !Number.isInteger(data.secondNumber)) {
+          throw new Error('第一数、第二数必须为整数。')
         }
 
         const now = new Date()
         const branch = getEarthlyBranch(now)
-        const nextResult = calculateHexagram(data.firstNumber as number, data.secondNumber as number, data.withTime, branch.number)
+        const nextResult = calculateHexagram(data.firstNumber as number, data.secondNumber as number)
         setFirstNumber(String(data.firstNumber))
         setSecondNumber(String(data.secondNumber))
-        setWithTime(data.withTime)
         setCastTime(now)
         setError('')
 
@@ -142,7 +139,6 @@ export default function App() {
           changedLower: nextResult.changedLower.name,
           movingLine: nextResult.movingLine,
           branch: branch.name,
-          withTime: data.withTime,
         }
       },
     }, { signal: lifecycle.signal })
@@ -160,7 +156,7 @@ export default function App() {
 
   const currentBranch = getEarthlyBranch(clock)
   const resultBranch = getEarthlyBranch(castTime)
-  const result = values ? calculateHexagram(values.first, values.second, withTime, resultBranch.number) : null
+  const result = values ? calculateHexagram(values.first, values.second) : null
   const spaceTime = calculateSpaceTime(resultBranch)
   const castTimeParts = formatCastTime(castTime)
   const ganZhiPillars = getGanZhiPillars(castTime)
@@ -172,11 +168,6 @@ export default function App() {
       return
     }
     setError('')
-    setCastTime(new Date())
-  }
-
-  const toggleTime = () => {
-    setWithTime((enabled) => !enabled)
     setCastTime(new Date())
   }
 
@@ -199,7 +190,7 @@ export default function App() {
       <section className="intro" id="top">
         <p className="eyebrow">以数观象 · 以时定变</p>
         <h1>两数成卦，一爻见变</h1>
-        <p>输入两个整数，结合当下时辰，即时排出本卦、动爻与变卦。</p>
+        <p>输入两个整数，以上下卦数定动爻，并结合当下时辰排出时空卦。</p>
       </section>
 
       <div className="workspace">
@@ -236,14 +227,6 @@ export default function App() {
               </label>
             </div>
 
-            <button className={`time-toggle${withTime ? ' enabled' : ''}`} type="button" role="switch" aria-checked={withTime} onClick={toggleTime}>
-              <span className="toggle-track"><i /></span>
-              <span>
-                <b>添加时辰</b>
-                <small>当前地支序数参与动爻计算</small>
-              </span>
-            </button>
-
             {error && <p className="form-error" role="alert">{error}</p>}
             <button className="cast-button" type="submit">
               <span>起卦</span>
@@ -276,8 +259,8 @@ export default function App() {
             </div>
             {result && (
               <div className="formula-chip">
-                <span>动爻推演</span>
-                <b>{values?.first} + {values?.second}{withTime ? ` + ${resultBranch.number}` : ''} = {result.movingRaw} → {result.movingLine}</b>
+                <span>动爻推演 · 卦数相加</span>
+                <b>{result.upper.number} + {result.lower.number} = {result.movingRaw} → {result.movingLine}</b>
               </div>
             )}
           </div>
@@ -346,7 +329,7 @@ export default function App() {
           </summary>
           <div className="rules-content">
             <div><span>01</span><p><b>定上下卦</b>两数分别除以 8 取余，余 0 按 8 计。第一数定上卦，第二数定下卦。</p></div>
-            <div><span>02</span><p><b>定动爻</b>两数相加；若启用时辰，再加地支序数。总数除以 6 取余，余 0 按第 6 爻计。</p></div>
+            <div><span>02</span><p><b>定动爻</b>上卦数与下卦数相加，不加时辰。总数除以 6 取余，余 0 按第 6 爻计。</p></div>
             <div><span>03</span><p><b>成变卦</b>自下而上数动爻，只翻转该爻的阴阳，其余五爻保持不变。</p></div>
           </div>
         </details>

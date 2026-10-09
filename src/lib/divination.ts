@@ -66,16 +66,13 @@ export function getTrigramByLines(lines: readonly boolean[]): Trigram {
 export function calculateHexagram(
   firstNumber: number,
   secondNumber: number,
-  withTime: boolean,
-  branchNumber: number,
 ): HexagramResult {
   const first = Math.trunc(firstNumber)
   const second = Math.trunc(secondNumber)
   const upper = TRIGRAMS[toBaguaNumber(first)]
   const lower = TRIGRAMS[toBaguaNumber(second)]
 
-  // TODO(待确认规则3)：添加时辰在 MVP 中只影响动爻。
-  const movingRaw = first + second + (withTime ? branchNumber : 0)
+  const movingRaw = upper.number + lower.number
   const movingLine = getMovingLine(movingRaw)
   const originalLines = [...lower.lines, ...upper.lines]
   const changedLines = [...originalLines]
