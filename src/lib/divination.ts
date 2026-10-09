@@ -66,13 +66,15 @@ export function getTrigramByLines(lines: readonly boolean[]): Trigram {
 export function calculateHexagram(
   firstNumber: number,
   secondNumber: number,
+  withTime: boolean,
+  branchNumber: number,
 ): HexagramResult {
   const first = Math.trunc(firstNumber)
   const second = Math.trunc(secondNumber)
   const upper = TRIGRAMS[toBaguaNumber(first)]
   const lower = TRIGRAMS[toBaguaNumber(second)]
 
-  const movingRaw = upper.number + lower.number
+  const movingRaw = upper.number + lower.number + (withTime ? branchNumber : 0)
   const movingLine = getMovingLine(movingRaw)
   const originalLines = [...lower.lines, ...upper.lines]
   const changedLines = [...originalLines]

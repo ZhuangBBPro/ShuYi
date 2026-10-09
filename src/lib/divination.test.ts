@@ -26,17 +26,23 @@ describe('moving line', () => {
     expect(getMovingLine(12)).toBe(6)
   })
 
-  it('adds the resolved upper and lower trigram numbers and flips one line', () => {
-    const result = calculateHexagram(6, 40)
+  it('adds the resolved trigram numbers and the branch when requested', () => {
+    const result = calculateHexagram(6, 40, true, 9)
     expect(result.upper.number).toBe(6)
     expect(result.lower.number).toBe(8)
-    expect(result.movingRaw).toBe(14)
-    expect(result.movingLine).toBe(2)
+    expect(result.movingRaw).toBe(23)
+    expect(result.movingLine).toBe(5)
     expect(result.changedLines.filter((line, index) => line !== result.originalLines[index])).toHaveLength(1)
   })
 
+  it('omits the branch when time participation is disabled', () => {
+    const result = calculateHexagram(6, 40, false, 9)
+    expect(result.movingRaw).toBe(14)
+    expect(result.movingLine).toBe(2)
+  })
+
   it('resolves the changed upper and lower trigrams from the flipped lines', () => {
-    const result = calculateHexagram(1, 2)
+    const result = calculateHexagram(1, 2, false, 3)
     expect(result.upper.name).toBe('乾')
     expect(result.lower.name).toBe('兑')
     expect(result.changedUpper.name).toBe('乾')
@@ -46,7 +52,7 @@ describe('moving line', () => {
   })
 
   it('returns the standard names for the default original and changed hexagrams', () => {
-    const result = calculateHexagram(18, 27)
+    const result = calculateHexagram(18, 27, false, 7)
     expect(result.name).toBe('泽火革')
     expect(result.changedName).toBe('雷火丰')
   })
