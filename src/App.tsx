@@ -93,6 +93,7 @@ export default function App() {
   const [castTime, setCastTime] = useState(() => new Date())
   const [clock, setClock] = useState(() => new Date())
   const [error, setError] = useState('')
+  const [question, setQuestion] = useState('')
 
   useEffect(() => {
     const timer = window.setInterval(() => setClock(new Date()), 1000)
@@ -338,18 +339,15 @@ export default function App() {
         </section>
       </div>
 
-      <section className="rules-section">
-        <details>
-          <summary>
-            <span><b>规则说明</b><small>了解折八、动爻与时空卦的计算方式</small></span>
-            <span className="summary-plus" aria-hidden="true">+</span>
-          </summary>
-          <div className="rules-content">
-            <div><span>01</span><p><b>定上下卦</b>两数分别除以 8 取余，余 0 按 8 计。第一数定上卦，第二数定下卦。</p></div>
-            <div><span>02</span><p><b>定动爻</b>上卦数与下卦数相加；若启用时辰，再加当前地支序数。总数除以 6 取余，余 0 按第 6 爻计。</p></div>
-            <div><span>03</span><p><b>成变卦</b>自下而上数动爻，只翻转该爻的阴阳，其余五爻保持不变。</p></div>
-          </div>
-        </details>
+      <section className="question-section">
+        <label htmlFor="question-input">所问之事</label>
+        <textarea
+          id="question-input"
+          rows={2}
+          value={question}
+          onChange={(event) => setQuestion(event.target.value)}
+          placeholder="写下你要占卜的问题"
+        />
       </section>
 
       <footer>
