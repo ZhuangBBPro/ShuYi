@@ -3,8 +3,10 @@ import {
   calculateHexagram,
   calculateSpaceTime,
   getEarthlyBranch,
+  shiftToBranch,
 } from './lib/divination'
-import { formatCastTime, getGanZhiPillars } from './lib/date'
+import { formatCastTime, getGanZhiPillars, parseDateTimeLocalValue, toDateTimeLocalValue } from './lib/date'
+import { EARTHLY_BRANCHES, type EarthlyBranch } from './config'
 
 declare global {
   interface Document {
@@ -92,6 +94,8 @@ export default function App() {
   const [withTime, setWithTime] = useState(true)
   const [castTime, setCastTime] = useState(() => new Date())
   const [clock, setClock] = useState(() => new Date())
+  const [manualMode, setManualMode] = useState(false)
+  const [manualTime, setManualTime] = useState(() => new Date())
   const [error, setError] = useState('')
   const [question, setQuestion] = useState('')
 
@@ -159,7 +163,8 @@ export default function App() {
     return { first: Math.trunc(first), second: Math.trunc(second) }
   }, [firstNumber, secondNumber])
 
-  const currentBranch = getEarthlyBranch(clock)
+  const displayTime = manualMode ? manualTime : clock
+  const currentBranch = getEarthlyBranch(displayTime)
   const resultBranch = getEarthlyBranch(castTime)
   const result = values ? calculateHexagram(values.first, values.second, withTime, resultBranch.number) : null
   const spaceTime = calculateSpaceTime(resultBranch)
@@ -173,13 +178,39 @@ export default function App() {
       return
     }
     setError('')
-    setCastTime(new Date())
+    setCastTime(manualMode ? manualTime : new Date())
   }
 
   const toggleTime = () => {
     setWithTime((enabled) => !enabled)
+    setCastTime(manualMode ? manualTime : new Date())
+  }
+
+  const applyManualTime = (date: Date) => {
+    setManualTime(date)
+    setCastTime(date)
+  }
+
+  const enterManualMode = () => {
+    if (manualMode) return
+    const start = new Date(castTime)
+    start.setSeconds(0, 0)
+    setManualMode(true)
+    applyManualTime(start)
+  }
+
+  const enterLiveMode = () => {
+    setManualMode(false)
     setCastTime(new Date())
   }
+
+  const resetManualToNow = () => {
+    const now = new Date()
+    now.setSeconds(0, 0)
+    applyManualTime(now)
+  }
+
+  const chooseBranch = (branch: EarthlyBranch) => applyManualTime(shiftToBranch(manualTime, branch))
 
   return (
     <main>
@@ -241,7 +272,7 @@ export default function App() {
               <span className="toggle-track"><i /></span>
               <span>
                 <b>添加时辰</b>
-                <small>当前地支序数参与动爻计算</small>
+                <small>{manualMode ? '所设时辰' : '当前'}地支序数参与动爻计算</small>
               </span>
             </button>
 
@@ -253,7 +284,13 @@ export default function App() {
           </form>
 
           <div className="time-panel">
-            <p className="section-kicker">此刻</p>
+            <div className="time-panel-head">
+              <p className="section-kicker">{manualMode ? '设定时辰' : '此刻'}</p>
+              <div className="time-mode" role="group" aria-label="时间模式">
+                <button type="button" className={manualMode ? '' : 'active'} aria-pressed={!manualMode} onClick={enterLiveMode}>实时</button>
+                <button type="button" className={manualMode ? 'active' : ''} aria-pressed={manualMode} onClick={enterManualMode}>手动</button>
+              </div>
+            </div>
             <div className="branch-display">
               <span className="branch-character">{currentBranch.name}</span>
               <div>
@@ -262,10 +299,46 @@ export default function App() {
               </div>
               <strong>{String(currentBranch.number).padStart(2, '0')}</strong>
             </div>
-            <div className="time-meta">
-              <span>本地时间</span>
-              <b>{dateTimeFormatter.format(clock)}</b>
-            </div>
+            {manualMode ? (
+              <div className="manual-time">
+                <label className="manual-field">
+                  <span>起卦时间</span>
+                  <input
+                    type="datetime-local"
+                    step="60"
+                    value={toDateTimeLocalValue(manualTime)}
+                    onChange={(event) => {
+                      const next = parseDateTimeLocalValue(event.target.value)
+                      if (next) applyManualTime(next)
+                    }}
+                  />
+                </label>
+                <div className="branch-picker" role="radiogroup" aria-label="选择时辰">
+                  {EARTHLY_BRANCHES.map((branch) => (
+                    <button
+                      key={branch.name}
+                      type="button"
+                      role="radio"
+                      aria-checked={branch.name === currentBranch.name}
+                      aria-label={`${branch.name}时 ${branch.time}`}
+                      className={branch.name === currentBranch.name ? 'active' : ''}
+                      onClick={() => chooseBranch(branch)}
+                    >
+                      {branch.name}
+                    </button>
+                  ))}
+                </div>
+                <div className="manual-foot">
+                  <span>点选时辰会把时间调到该时辰起点</span>
+                  <button type="button" onClick={resetManualToNow}>回到此刻</button>
+                </div>
+              </div>
+            ) : (
+              <div className="time-meta">
+                <span>本地时间</span>
+                <b>{dateTimeFormatter.format(clock)}</b>
+              </div>
+            )}
           </div>
         </aside>
 

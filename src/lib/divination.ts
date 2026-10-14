@@ -49,6 +49,14 @@ export function getEarthlyBranch(date: Date): EarthlyBranch {
   return EARTHLY_BRANCHES[index]
 }
 
+// 把时间调到指定时辰的起始时刻；已在该时辰内则保持不变。子时取当晚 23:00。
+export function shiftToBranch(date: Date, branch: EarthlyBranch): Date {
+  if (getEarthlyBranch(date).name === branch.name) return new Date(date)
+  const next = new Date(date)
+  next.setHours(branch.number === 1 ? 23 : (branch.number - 1) * 2 - 1, 0, 0, 0)
+  return next
+}
+
 export function getMovingLine(raw: number): number {
   const remainder = ((Math.trunc(raw) % 6) + 6) % 6
   return remainder === 0 ? 6 : remainder

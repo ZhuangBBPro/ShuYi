@@ -80,6 +80,24 @@ form { margin-top: 30px; }
 .branch-display > div b { font-family: var(--serif); font-size: 18px; }
 .branch-display > div span { color: var(--muted); font-size: 12px; }
 .branch-display > strong { color: rgba(216,181,106,.25); font-size: 40px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.time-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.time-panel-head .section-kicker { margin: 0; }
+.time-mode { display: inline-flex; padding: 3px; border: 1px solid var(--line); border-radius: 20px; background: rgba(4,8,17,.42); }
+.time-mode button { min-width: 52px; height: 28px; padding: 0 12px; border: 0; border-radius: 16px; background: transparent; color: var(--muted); font-size: 13px; cursor: pointer; transition: .2s ease; }
+.time-mode button.active { background: var(--gold); color: #17130b; font-weight: 700; }
+.manual-time { margin-top: 18px; display: grid; gap: 14px; }
+.manual-field { display: grid; gap: 8px; }
+.manual-field > span { color: var(--muted); font-size: 12px; }
+.manual-field input { width: 100%; min-width: 0; height: 48px; padding: 0 14px; border: 1px solid var(--line); border-radius: 3px; outline: none; background: rgba(4,8,17,.42); color: var(--ink); color-scheme: dark; font-size: 16px; font-variant-numeric: tabular-nums; text-align: left; -webkit-appearance: none; appearance: none; }
+.manual-field input::-webkit-date-and-time-value { text-align: left; }
+.manual-field input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(216,181,106,.1); }
+.branch-picker { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.branch-picker button { height: 40px; border: 1px solid var(--line); border-radius: 3px; background: rgba(255,255,255,.02); color: var(--ink); font-family: var(--serif); font-size: 18px; cursor: pointer; transition: .2s ease; }
+.branch-picker button:hover { border-color: rgba(216,181,106,.5); }
+.branch-picker button.active { border-color: var(--gold); background: rgba(216,181,106,.16); color: var(--gold-bright); }
+.manual-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 12px; }
+.manual-foot button { flex: 0 0 auto; padding: 6px 0; border: 0; background: transparent; color: var(--gold); font-size: 13px; cursor: pointer; }
+.time-mode button:focus-visible, .branch-picker button:focus-visible, .manual-foot button:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
 .time-meta { margin-top: 18px; display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 12px; }
 .time-meta b { color: #c8cede; font-variant-numeric: tabular-nums; }
 

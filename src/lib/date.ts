@@ -60,3 +60,18 @@ export function getGanZhiPillars(date: Date): GanZhiPillar[] {
     branch: value.slice(1, 2),
   }))
 }
+
+const pad = (value: number) => String(value).padStart(2, '0')
+
+// 供 <input type="datetime-local"> 使用的本地时间字符串，精确到分钟。
+export function toDateTimeLocalValue(date: Date): string {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
+export function parseDateTimeLocalValue(value: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(value)
+  if (!match) return null
+  const [, year, month, day, hour, minute] = match.map(Number)
+  const date = new Date(year, month - 1, day, hour, minute, 0, 0)
+  return Number.isNaN(date.getTime()) ? null : date
+}

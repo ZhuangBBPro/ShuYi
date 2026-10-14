@@ -4,6 +4,7 @@ import {
   calculateSpaceTime,
   getEarthlyBranch,
   getMovingLine,
+  shiftToBranch,
   spaceTimeNumber,
   toBaguaNumber,
 } from './divination'
@@ -73,5 +74,26 @@ describe('earthly branches', () => {
     const monkey = calculateSpaceTime(EARTHLY_BRANCHES[8])
     expect(monkey.folded.name).toBe('乾')
     expect(monkey.direct.name).toBe('坤')
+  })
+})
+
+describe('shiftToBranch', () => {
+  const branch = (name: string) => EARTHLY_BRANCHES.find((item) => item.name === name)!
+
+  it('keeps the time when it already falls inside the chosen branch', () => {
+    const date = new Date(2026, 9, 13, 22, 59)
+    expect(shiftToBranch(date, branch('亥'))).toEqual(date)
+  })
+
+  it('moves back from 子 to the start of 亥 on the same day', () => {
+    const shifted = shiftToBranch(new Date(2026, 9, 13, 23, 0), branch('亥'))
+    expect(shifted).toEqual(new Date(2026, 9, 13, 21, 0))
+    expect(getEarthlyBranch(shifted).name).toBe('亥')
+  })
+
+  it('lands on the matching branch for every choice', () => {
+    for (const item of EARTHLY_BRANCHES) {
+      expect(getEarthlyBranch(shiftToBranch(new Date(2026, 9, 14, 8, 50), item)).name).toBe(item.name)
+    }
   })
 })
